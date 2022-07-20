@@ -5,6 +5,7 @@ import (
 	"log"
 	"server/model"
 
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -13,12 +14,12 @@ var DB *gorm.DB
 
 func InitDB() *gorm.DB {
 	// dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
-	username := "ppk"
-	password := "@#pas123"
-	url := "127.0.0.1"
-	port := "3306"
-	dbname := "OceanLearn"
-	charset := "utf8mb4"
+	username := viper.GetString("datasource.username")
+	password := viper.GetString("datasource.password")
+	url := viper.GetString("datasource.url")
+	port := viper.GetString("datasource.port")
+	dbname := viper.GetString("datasource.dbname")
+	charset := viper.GetString("datasource.charset")
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local", username, password, url, port, dbname, charset)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
