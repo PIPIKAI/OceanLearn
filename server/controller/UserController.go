@@ -25,9 +25,19 @@ func Register(ctx *gin.Context) {
 
 	// 验证数据
 	db := common.GetDB()
-	username := ctx.PostForm("username")
-	password := ctx.PostForm("password")
-	telephone := ctx.PostForm("telephone")
+
+	// 这种获取不到
+	// username := ctx.PostForm("username")
+	// password := ctx.PostForm("password")
+	// telephone := ctx.PostForm("telephone")
+
+	// 用这种方式双向绑定
+	var request = model.User{}
+	ctx.Bind(&request)
+	username := request.Username
+	password := request.Password
+	telephone := request.Telephone
+
 	if len(telephone) != 11 {
 		util.Response{}.ResponsFmt(ctx, http.StatusUnprocessableEntity, 422, nil, "手机号必须为11位")
 		return
@@ -64,15 +74,30 @@ func Register(ctx *gin.Context) {
 	}
 	db.Create(&newUser)
 
-	util.Response{}.Success(ctx, nil, "注册成功")
+	// util.Response{}.Success(ctx, nil, "注册成功")
+	// 发放token
+
+	token, err := common.ReleaseToken(newUser)
+	if err != nil {
+		util.Response{}.ResponsFmt(ctx, http.StatusInternalServerError, 500, nil, "系统异常")
+		log.Printf("token generate error: %v", err.Error())
+		return
+	}
+
+	// 返回结果
+	util.Response{}.Success(ctx, gin.H{"token": token}, "注册成功")
 
 }
 func Login(ctx *gin.Context) {
 
 	// 验证数据
 	db := common.GetDB()
-	password := ctx.PostForm("password")
-	telephone := ctx.PostForm("telephone")
+
+	// 用这种方式双向绑定
+	var request = model.User{}
+	ctx.Bind(&request)
+	password := request.Password
+	telephone := request.Telephone
 	if len(telephone) != 11 {
 		util.Response{}.ResponsFmt(ctx, http.StatusUnprocessableEntity, 422, nil, "手机号必须为11位")
 
