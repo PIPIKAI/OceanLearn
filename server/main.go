@@ -11,8 +11,7 @@ import (
 func main() {
 	InitConfig()
 	db := common.InitDB()
-	defer db.Statement.ReflectValue.Close()
-
+	defer db.Close()
 	r := gin.Default()
 	r = CollectRoute(r)
 	port := viper.GetString("server.port")

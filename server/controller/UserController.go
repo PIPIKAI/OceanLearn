@@ -9,17 +9,14 @@ import (
 	"server/util"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 func isTelephoneExist(db *gorm.DB, tel string) bool {
 	var user model.User
 	db.Where("telephone=?", tel).First(&user)
-	if user.ID == 0 {
-		return false
-	}
-	return true
+	return user.ID != 0
 }
 func Register(ctx *gin.Context) {
 

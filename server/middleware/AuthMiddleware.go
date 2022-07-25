@@ -3,7 +3,6 @@ package middleware
 import (
 	"net/http"
 	"server/common"
-	"server/dto"
 	"server/model"
 	"strings"
 
@@ -41,7 +40,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		// 用户存在 将user 在ctx中设置
-		ctx.Set("user", dto.ToUserDto(user))
+		ctx.Set("user", user)
 		ctx.Next()
 	}
 }
